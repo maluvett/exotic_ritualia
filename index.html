@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ritualia — Книга Церемоний</title>
+    <style>
+        /* Базовые настройки и цвета (Тропический минимализм) */
+        :root {
+            --bg-color: #FBF9F6; /* Мягкий песочно-белый */
+            --text-main: #2C302E; /* Глубокий графитовый вместо резкого чёрного */
+            --accent-green: #4A5D4E; /* Приглушённый шалфейно-зелёный */
+            --accent-clay: #D4A373; /* Тёплая терракота / глина */
+            --card-bg: #FFFFFF;
+            --transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        /* Контейнер */
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 0;
+        }
+
+        /* Шапка */
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--accent-green);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            color: #8C92AC;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Панель управления (Поиск и Фильтры) */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 60px;
+            align-items: center;
+        }
+
+        /* Выбор народа */
+        .tabs {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: none;
+            border: 1px solid #E0DCD5;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: var(--text-main);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-green);
+            border-color: var(--accent-green);
+            color: #fff;
+        }
+
+        /* Строка поиска */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-bottom: 1px solid #E0DCD5;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-bottom-color: var(--accent-clay);
+        }
+
+        .search-input::placeholder {
+            color: #B3AEA6;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        /* Сетка ритуалов */
+        .rituals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        /* Карточка ритуала */
+        .ritual-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(74, 93, 78, 0.02);
+            border: 1px solid #F0ECE6;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ritual-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(74, 93, 78, 0.06);
+            border-color: #E2DDD5;
+        }
+
+        .ritual-nation {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-clay);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .ritual-title {
+            font-size: 1.3rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .ritual-description {
+            font-size: 0.95rem;
+            color: #606662;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        /* Состояние отсутствия результатов */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #B3AEA6;
+            font-weight: 300;
+            display: none;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .wrapper { padding: 40px 0; }
+            h1 { font-size: 2rem; }
+            .rituals-grid { gap: 25px; }
+            .ritual-card { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <h1>Ritualia</h1>
+        <p class="subtitle">Древние обряды, ритуалы и церемонии трёх великих культур</p>
+    </header>
+
+    <div class="controls">
+        <!-- Выбор народа -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterNation('all')">Все культуры</button>
+            <button class="tab-btn" onclick="filterNation('Полинезийцы')">Полинезийцы</button>
+            <button class="tab-btn" onclick="filterNation('Майя')">Майя</button>
+            <button class="tab-btn" onclick="filterNation('Кельты')">Кельты</button>
+        </div>
+
+        <!-- Поиск -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск ритуала или ключевого слова..." oninput="filterRituals()">
+        </div>
+    </div>
+
+    <!-- Сетка с ритуалами -->
+    <main class="rituals-grid" id="ritualsGrid">
+        <!-- Ритуалы будут сгенерированы JavaScript -->
+    </main>
+    
+    <div id="noResults" class="no-results">По вашему запросу ничего не найдено.</div>
+</div>
+
+<script>
+    // База данных: 3 народа по 9 ритуалов = 27 ритуалов
+    const ritualsData = [
+        // ПОЛИНЕЗИЙЦЫ (9)
+        { nation: "Полинезийцы", title: "Кава-церемония", desc: "Священное приготовление и распитие тонизирующего напитка из корней кустарника кава для скрепления союзов и приветствия важных гостей." },
+        { nation: "Полинезийцы", title: "Хеива", desc: "Праздник жизни, выраженный через экспрессивные танцы и песни, повествующие о сотворении мира и подвигах предков." },
+        { nation: "Полинезийцы", title: "Татау", desc: "Сакральный обряд нанесения нательных знаков, определяющий социальный статус, силу духа и генеалогическое древо мужчины или женщины." },
+        { nation: "Полинезийцы", title: "Холоку", desc: "Церемония подношения первых плодов земли и океана богам плодородия ради благословения будущего урожая." },
+        { nation: "Полинезийцы", title: "Тики-атуа", desc: "Обряд активации деревянных или каменных статуй предков, в ходе которого в них призывают дух-хранитель 'мана'." },
+        { nation: "Полинезийцы", title: "Хула-кахуiko", desc: "Древняя, строгая форма ритуального танца, исполняемая под удары барабанов в честь богини вулканов Пеле." },
+        { nation: "Полинезийцы", title: "Уму-ти", desc: "Обряд хождения босиком по раскаленным в земляной печи камням для демонстрации духовной чистоты и веры." },
+        { nation: "Полинезийцы", title: "Луау", desc: "Традиционный пир единения общины, устроенный в честь важных жизненных вех: рождения ребенка или победы." },
+        { nation: "Полинезийцы", title: "Очищение океаном", desc: "Предрассветное омовение в соленой воде для смывания негативной энергии и восстановления личного баланса 'поно'." },
+
+        // МАЙЯ (9)
+        { nation: "Майя", title: "Темаскаль", desc: "Ритуал очищения паром в купольной каменной гробнице-бане, символизирующей лоно матери-земли, для исцеления души и тела." },
+        { nation: "Майя", title: "Пок-та-пок", desc: "Священная игра в мяч, моделирующая движение солнца и звезд, завершающаяся подношением космическим силам." },
+        { nation: "Майя", title: "Подношение Сеноту", desc: "Церемония благодарения бога дождя Чаака у священных карстовых озер с погружением даров из нефрита и золота." },
+        { nation: "Майя", title: "Сак Ха", desc: "Ритуал подношения богам кукурузных полей особого ритуального напитка из маиса и чистой лесной воды." },
+        { nation: "Майя", title: "Хетцмек", desc: "Древний обряд инициации, когда младенца впервые сажают на бедро взрослого, символически открывая его жизненный путь и предназначение." },
+        { nation: "Майя", title: "Встреча Равноденствия", desc: "Церемония на вершине пирамиды Кукулькана, улавливающая скольжение солнечной змеи по ступеням храма в дни смены сезонов." },
+        { nation: "Майя", title: "Воскурение Копала", desc: "Сжигание священной древесной смолы копал во время молитв для доставки земных просьб в тонкий мир богов." },
+        { nation: "Майя", title: "Танец Оленя", desc: "Обрядовый танец-просьба к духам природы о разрешении на охоту и сохранении баланса между человеком и лесом." },
+        { nation: "Майя", title: "Благословение огня", desc: "Обряд зажжения нового чистого пламени в канун нового цикла календаря Цолькин для защиты дома от темных сил." },
+
+        // КЕЛЬТЫ (9)
+        { nation: "Кельты", title: "Самайн", desc: "Ночной ритуал встречи темной половины года, когда граница между миром живых и духов истончается, и зажигаются священные костры." },
+        { nation: "Кельты", title: "Белтейн", desc: "Праздник торжества солнца и плодородия. Прогон скота между двумя очищающими кострами и украшение Майского Древа." },
+        { nation: "Кельты", title: "Имболк", desc: "Ранневесенний обряд очищения дома и поклонения богине Бригите, знаменующий первое пробуждение природы и появление молока у овец." },
+        { nation: "Кельты", title: "Лугнасад", desc: "Осенний ритуал сбора урожая, посвященный богу Лугу. Включает в себя ярмарки, состязания в силе и ритуальное преломление хлеба." },
+        { nation: "Кельты", title: "Альбан Элир", desc: "Празднование весеннего равноденствия, ритуал баланса света и тьмы, благословение семян перед весенним посевом." },
+        { nation: "Кельты", title: "Обряд Омелы", desc: "Священный друидический ритуал срезания омелы золотым серпом с ветвей дуба в шестой день луны для создания целебных эликсиров." },
+        { nation: "Кельты", title: "Связывание рук", desc: "Древний свадебный обряд, в котором руки влюбленных связываются ритуальной лентой в знак союза на год и один день." },
+        { nation: "Кельты", title: "Слушание Волн", desc: "Медитативный ритуал друидов на скалистых берегах для получения предсказаний по шуму прибоя и полету морских птиц." },
+        { nation: "Кельты", title: "Возлияние Земле", desc: "Ритуальное выливание темного эля или молока на корни священных деревьев в знак благодарности за защиту племени." }
+    ];
+
+    let currentNation = 'all';
+
+    // Рендеринг карточек
+    function renderRituals(data) {
+        const grid = document.getElementById('ritualsGrid');
+        const noResults = document.getElementById('noResults');
+        grid.innerHTML = '';
+
+        if (data.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        } else {
+            noResults.style.display = 'none';
+        }
+
+        data.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'ritual-card';
+            card.innerHTML = `
+                <div class="ritual-nation">${item.nation}</div>
+                <h2 class="ritual-title">${item.title}</h2>
+                <p class="ritual-description">${item.desc}</p>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Переключение вкладок (выбор народа)
+    function filterNation(nation) {
+        currentNation = nation;
+        
+        // Обновляем активный класс на кнопках
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === nation || (nation === 'all' && btn.textContent === 'Все культуры')) {
+                btn.classList.add('active');
+            }
+        });
+
+        filterRituals();
+    }
+
+    // Глобальная фильтрация по народу + поиск
+    function filterRituals() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+        const filtered = ritualsData.filter(item => {
+            const matchesNation = (currentNation === 'all' || item.nation === currentNation);
+            const matchesSearch = item.title.toLowerCase().includes(searchText) || 
+                                  item.desc.toLowerCase().includes(searchText);
+            return matchesNation && matchesSearch;
+        });
+
+        renderRituals(filtered);
+    }
+
+    // Первая инициализация сайта
+    renderRituals(ritualsData);
+</script>
+
+</body>
+</html>
